@@ -20,9 +20,9 @@ class AntiScamApp {
     }
 
     setTheme() {
-        // Установка цветовой схемы
-        this.tg.setHeaderColor('#667eea');
-        this.tg.setBackgroundColor('#667eea');
+        // Устанавливаем темную тему
+        this.tg.setHeaderColor('#1a1a2e');
+        this.tg.setBackgroundColor('#1a1a2e');
     }
 
     setupEventListeners() {
@@ -51,16 +51,10 @@ class AntiScamApp {
 
     async loadStats() {
         try {
-            // Здесь будет API запрос к вашему боту
-            // Пока используем мок данные
-            const stats = {
-                pending: 5,
-                approved: 127,
-                rejected: 12,
-                total: 144
-            };
-
-            this.updateStats(stats);
+            // Запрашиваем статистику у бота
+            this.tg.sendData(JSON.stringify({
+                action: 'get_stats'
+            }));
         } catch (error) {
             console.error('Ошибка загрузки статистики:', error);
             this.showNotification('Ошибка загрузки статистики', 'error');
@@ -71,8 +65,8 @@ class AntiScamApp {
         const pendingElement = document.getElementById('pendingCount');
         const approvedElement = document.getElementById('approvedCount');
 
-        if (pendingElement) pendingElement.textContent = stats.pending;
-        if (approvedElement) approvedElement.textContent = stats.approved;
+        if (pendingElement) pendingElement.textContent = stats.pending || 0;
+        if (approvedElement) approvedElement.textContent = stats.approved || 0;
     }
 
     async searchScammer() {
@@ -86,9 +80,11 @@ class AntiScamApp {
         this.showLoading();
 
         try {
-            // Здесь будет API запрос к вашему боту
-            // Пока используем мок данные
-            await this.simulateSearch(query);
+            // Отправляем запрос в Telegram бот
+            this.tg.sendData(JSON.stringify({
+                action: 'search',
+                query: query
+            }));
         } catch (error) {
             console.error('Ошибка поиска:', error);
             this.showNotification('Ошибка поиска', 'error');
@@ -96,60 +92,13 @@ class AntiScamApp {
         }
     }
 
-    async simulateSearch(query) {
-        // Имитация задержки API
-        await new Promise(resolve => setTimeout(resolve, 1000));
-
-        const mockResults = this.getMockResults(query);
-        this.displayResults(mockResults);
-    }
-
-    getMockResults(query) {
-        // Мок данные для демонстрации
-        const allResults = [
-            {
-                id: 1,
-                username: '@scammer123',
-                user_id: '123456789',
-                description: 'Обманул на 5000 рублей, обещал продать iPhone, но заблокировал после перевода денег',
-                date: '15.12.2024',
-                hasEvidence: true,
-                evidenceType: 'photo'
-            },
-            {
-                id: 2,
-                username: '@fake_seller',
-                user_id: '987654321',
-                description: 'Продавал несуществующие билеты на концерт, забрал деньги и исчез',
-                date: '10.12.2024',
-                hasEvidence: false
-            },
-            {
-                id: 3,
-                username: '@crypto_scam',
-                user_id: '555666777',
-                description: 'Предлагал инвестиции в криптовалюту, обещал 200% прибыли, но забрал деньги',
-                date: '08.12.2024',
-                hasEvidence: true,
-                evidenceType: 'video'
-            }
-        ];
-
-        // Фильтрация по запросу
-        return allResults.filter(result => 
-            result.username.toLowerCase().includes(query.toLowerCase()) ||
-            result.user_id.includes(query) ||
-            result.description.toLowerCase().includes(query.toLowerCase())
-        );
-    }
-
     displayResults(results) {
         const resultsDiv = document.getElementById('results');
         
         if (!results || results.length === 0) {
             resultsDiv.innerHTML = `
-                <div class="no-results">
-                    <div style="font-size: 48px; margin-bottom: 20px;">🔍</div>
+                <div class="empty-state">
+                    <div class="empty-state-icon">🔍</div>
                     <h3>Ничего не найдено</h3>
                     <p>Попробуйте другой запрос</p>
                 </div>
@@ -170,7 +119,7 @@ class AntiScamApp {
                         <span>📅 ${result.date}</span>
                         ${result.hasEvidence 
                             ? `<button class="evidence-btn" data-report-id="${result.id}">📸 Доказательства (${result.evidenceType})</button>`
-                            : '<span style="color: #999;">📸 Нет доказательств</span>'
+                            : '<span style="color: rgba(255,255,255,0.4);">📸 Нет доказательств</span>'
                         }
                     </div>
                 </div>
@@ -182,10 +131,7 @@ class AntiScamApp {
 
     async viewEvidence(reportId) {
         try {
-            // Здесь будет API запрос для получения доказательств
-            this.showNotification('Функция просмотра доказательств будет доступна в полной версии', 'info');
-            
-            // Отправляем данные в Telegram
+            // Отправляем запрос на просмотр доказательств
             this.tg.sendData(JSON.stringify({
                 action: 'view_evidence',
                 report_id: reportId
@@ -229,16 +175,32 @@ class AntiScamApp {
         notification.className = `notification ${type}`;
         notification.textContent = message;
         
+        // Стили для уведомления
+        notification.style.cssText = `
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            background: ${type === 'error' ? '#ef4444' : type === 'warning' ? '#f59e0b' : '#667eea'};
+            color: white;
+            padding: 15px 20px;
+            border-radius: 10px;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.3);
+            transform: translateX(100%);
+            transition: transform 0.3s ease;
+            z-index: 1000;
+            max-width: 300px;
+        `;
+        
         document.body.appendChild(notification);
         
         // Показываем уведомление
         setTimeout(() => {
-            notification.classList.add('show');
+            notification.style.transform = 'translateX(0)';
         }, 100);
         
         // Убираем уведомление через 3 секунды
         setTimeout(() => {
-            notification.classList.remove('show');
+            notification.style.transform = 'translateX(100%)';
             setTimeout(() => {
                 notification.remove();
             }, 300);
@@ -251,11 +213,11 @@ class AntiScamApp {
             const parsedData = JSON.parse(data);
             
             switch (parsedData.action) {
-                case 'update_stats':
-                    this.updateStats(parsedData.stats);
-                    break;
                 case 'search_results':
                     this.displayResults(parsedData.results);
+                    break;
+                case 'stats':
+                    this.updateStats(parsedData.stats);
                     break;
                 case 'show_evidence':
                     this.displayEvidence(parsedData.evidence);
@@ -269,23 +231,12 @@ class AntiScamApp {
     }
 
     displayEvidence(evidence) {
-        // Создаем модальное окно для показа доказательств
-        const modal = document.createElement('div');
-        modal.className = 'modal';
-        modal.innerHTML = `
-            <div class="modal-content">
-                <h3>📸 Доказательства</h3>
-                <p>Тип: ${evidence.type}</p>
-                <p>Размер: ${evidence.size}</p>
-                <button class="action-btn" onclick="this.parentElement.parentElement.remove()">Закрыть</button>
-            </div>
-        `;
-        
-        document.body.appendChild(modal);
-        
-        setTimeout(() => {
-            modal.classList.add('show');
-        }, 100);
+        if (evidence && evidence.url) {
+            // Открываем доказательство в новом окне
+            window.open(evidence.url, '_blank');
+        } else {
+            this.showNotification('Доказательства недоступны', 'error');
+        }
     }
 
     // Метод для отправки данных в Telegram

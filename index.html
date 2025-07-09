@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Anti-Scam Protection</title>
+    <title>Anti-Scam Database</title>
     <script src="https://telegram.org/js/telegram-web-app.js"></script>
     <style>
         * {
@@ -14,9 +14,10 @@
 
         body {
             font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            background: #0a0a0a;
+            color: #ffffff;
             min-height: 100vh;
-            color: #333;
+            line-height: 1.6;
         }
 
         .container {
@@ -28,185 +29,244 @@
         .header {
             text-align: center;
             margin-bottom: 30px;
-            color: white;
+            padding: 20px 0;
+            border-bottom: 1px solid #2a2a2a;
         }
 
         .header h1 {
-            font-size: 28px;
-            margin-bottom: 10px;
-            text-shadow: 0 2px 4px rgba(0,0,0,0.3);
+            font-size: 24px;
+            font-weight: 600;
+            color: #ffffff;
+            margin-bottom: 8px;
         }
 
         .header p {
-            font-size: 16px;
-            opacity: 0.9;
+            font-size: 14px;
+            color: #888888;
+            font-weight: 400;
         }
 
-        .card {
-            background: white;
-            border-radius: 20px;
-            padding: 25px;
+        .search-section {
+            background: #1a1a1a;
+            border: 1px solid #2a2a2a;
+            border-radius: 8px;
+            padding: 20px;
             margin-bottom: 20px;
-            box-shadow: 0 10px 30px rgba(0,0,0,0.2);
-            backdrop-filter: blur(10px);
         }
 
         .search-box {
             position: relative;
-            margin-bottom: 20px;
+            margin-bottom: 0;
         }
 
         .search-input {
             width: 100%;
-            padding: 15px 20px;
-            border: 2px solid #e1e5e9;
-            border-radius: 15px;
-            font-size: 16px;
-            transition: all 0.3s ease;
-            background: #f8f9fa;
+            padding: 12px 16px;
+            border: 1px solid #3a3a3a;
+            border-radius: 6px;
+            font-size: 14px;
+            background: #0f0f0f;
+            color: #ffffff;
+            transition: border-color 0.2s ease;
+        }
+
+        .search-input::placeholder {
+            color: #666666;
         }
 
         .search-input:focus {
             outline: none;
-            border-color: #667eea;
-            background: white;
-            box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+            border-color: #4a9eff;
         }
 
         .search-btn {
             position: absolute;
-            right: 10px;
+            right: 8px;
             top: 50%;
             transform: translateY(-50%);
-            background: #667eea;
+            background: #4a9eff;
             color: white;
             border: none;
-            border-radius: 10px;
-            padding: 10px 15px;
+            border-radius: 4px;
+            padding: 8px 12px;
             cursor: pointer;
-            font-size: 14px;
-            transition: all 0.3s ease;
+            font-size: 12px;
+            font-weight: 500;
         }
 
         .search-btn:hover {
-            background: #5a6fd8;
-            transform: translateY(-50%) scale(1.05);
+            background: #3a8eef;
         }
 
-        .stats-grid {
+        .stats-section {
             display: grid;
             grid-template-columns: 1fr 1fr;
-            gap: 15px;
+            gap: 12px;
             margin-bottom: 20px;
         }
 
         .stat-card {
-            background: linear-gradient(135deg, #667eea, #764ba2);
-            color: white;
-            padding: 20px;
-            border-radius: 15px;
+            background: #1a1a1a;
+            border: 1px solid #2a2a2a;
+            border-radius: 6px;
+            padding: 16px;
             text-align: center;
-            box-shadow: 0 5px 15px rgba(0,0,0,0.2);
         }
 
         .stat-number {
-            font-size: 24px;
-            font-weight: bold;
-            margin-bottom: 5px;
+            font-size: 20px;
+            font-weight: 600;
+            color: #4a9eff;
+            margin-bottom: 4px;
         }
 
         .stat-label {
-            font-size: 12px;
-            opacity: 0.9;
+            font-size: 11px;
+            color: #888888;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .submit-section {
+            background: #1a1a1a;
+            border: 1px solid #2a2a2a;
+            border-radius: 8px;
+            padding: 20px;
+            text-align: center;
+            margin-bottom: 20px;
+        }
+
+        .submit-section h3 {
+            font-size: 16px;
+            font-weight: 600;
+            margin-bottom: 8px;
+            color: #ffffff;
+        }
+
+        .submit-section p {
+            font-size: 13px;
+            color: #888888;
+            margin-bottom: 16px;
+        }
+
+        .submit-btn {
+            background: #4a9eff;
+            color: white;
+            border: none;
+            border-radius: 6px;
+            padding: 12px 24px;
+            font-size: 14px;
+            font-weight: 500;
+            cursor: pointer;
+            transition: background 0.2s ease;
+        }
+
+        .submit-btn:hover {
+            background: #3a8eef;
+        }
+
+        .results-section {
+            margin-top: 20px;
         }
 
         .result-card {
-            background: white;
-            border-radius: 15px;
-            padding: 20px;
-            margin-bottom: 15px;
-            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
-            border-left: 4px solid #ff6b6b;
+            background: #1a1a1a;
+            border: 1px solid #2a2a2a;
+            border-radius: 6px;
+            padding: 16px;
+            margin-bottom: 12px;
         }
 
         .result-header {
             display: flex;
             justify-content: space-between;
             align-items: center;
-            margin-bottom: 15px;
+            margin-bottom: 12px;
         }
 
         .scammer-name {
-            font-size: 18px;
-            font-weight: bold;
+            font-size: 14px;
+            font-weight: 600;
             color: #ff6b6b;
         }
 
         .scammer-id {
-            font-size: 14px;
-            color: #666;
-            background: #f8f9fa;
-            padding: 5px 10px;
-            border-radius: 8px;
+            font-size: 11px;
+            color: #888888;
+            background: #0f0f0f;
+            padding: 4px 8px;
+            border-radius: 4px;
+            font-family: monospace;
         }
 
         .result-description {
-            color: #555;
+            color: #cccccc;
+            font-size: 13px;
             line-height: 1.5;
-            margin-bottom: 15px;
+            margin-bottom: 12px;
         }
 
         .result-meta {
             display: flex;
             justify-content: space-between;
             align-items: center;
-            font-size: 12px;
-            color: #888;
+            font-size: 11px;
+            color: #888888;
         }
 
         .evidence-btn {
-            background: #667eea;
+            background: #4a9eff;
             color: white;
             border: none;
-            border-radius: 10px;
-            padding: 8px 15px;
+            border-radius: 4px;
+            padding: 6px 12px;
             cursor: pointer;
-            font-size: 12px;
-            transition: all 0.3s ease;
+            font-size: 11px;
+            font-weight: 500;
         }
 
         .evidence-btn:hover {
-            background: #5a6fd8;
-            transform: scale(1.05);
+            background: #3a8eef;
         }
 
-        .no-results {
+        .empty-state {
             text-align: center;
-            color: #666;
             padding: 40px 20px;
+            color: #888888;
         }
 
-        .no-results img {
-            width: 80px;
-            height: 80px;
-            margin-bottom: 20px;
+        .empty-state-icon {
+            font-size: 32px;
+            margin-bottom: 16px;
             opacity: 0.5;
+        }
+
+        .empty-state h3 {
+            font-size: 16px;
+            font-weight: 600;
+            margin-bottom: 8px;
+            color: #ffffff;
+        }
+
+        .empty-state p {
+            font-size: 13px;
+            opacity: 0.7;
         }
 
         .loading {
             text-align: center;
             padding: 40px 20px;
-            color: #666;
+            color: #888888;
         }
 
         .spinner {
-            width: 40px;
-            height: 40px;
-            border: 4px solid #f3f3f3;
-            border-top: 4px solid #667eea;
+            width: 24px;
+            height: 24px;
+            border: 2px solid #2a2a2a;
+            border-top: 2px solid #4a9eff;
             border-radius: 50%;
             animation: spin 1s linear infinite;
-            margin: 0 auto 20px;
+            margin: 0 auto 16px;
         }
 
         @keyframes spin {
@@ -214,74 +274,93 @@
             100% { transform: rotate(360deg); }
         }
 
-        .submit-section {
-            background: linear-gradient(135deg, #667eea, #764ba2);
-            color: white;
-            border-radius: 15px;
-            padding: 25px;
+        .error-state {
             text-align: center;
-            margin-bottom: 20px;
+            padding: 40px 20px;
+            color: #ff6b6b;
         }
 
-        .submit-btn {
-            background: white;
-            color: #667eea;
-            border: none;
-            border-radius: 15px;
-            padding: 15px 30px;
+        .error-state h3 {
             font-size: 16px;
-            font-weight: bold;
-            cursor: pointer;
-            transition: all 0.3s ease;
-            margin-top: 15px;
+            font-weight: 600;
+            margin-bottom: 8px;
         }
 
-        .submit-btn:hover {
-            transform: scale(1.05);
-            box-shadow: 0 5px 15px rgba(0,0,0,0.2);
+        .error-state p {
+            font-size: 13px;
+            opacity: 0.7;
         }
 
         .footer {
             text-align: center;
-            color: white;
-            opacity: 0.8;
-            font-size: 12px;
+            color: #666666;
+            font-size: 11px;
             margin-top: 30px;
+            padding-top: 20px;
+            border-top: 1px solid #2a2a2a;
         }
 
         @media (max-width: 480px) {
             .container {
-                padding: 15px;
+                padding: 16px;
             }
             
-            .header h1 {
-                font-size: 24px;
-            }
-            
-            .stats-grid {
+            .stats-section {
                 grid-template-columns: 1fr;
             }
+        }
+
+        /* Анимации */
+        .result-card {
+            animation: fadeIn 0.3s ease-out;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        /* Уведомления */
+        .notification {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            background: #1a1a1a;
+            color: #ffffff;
+            padding: 12px 16px;
+            border-radius: 6px;
+            border: 1px solid #2a2a2a;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.3);
+            transform: translateX(100%);
+            transition: transform 0.3s ease;
+            z-index: 1000;
+            max-width: 280px;
+            font-size: 13px;
+        }
+
+        .notification.show {
+            transform: translateX(0);
         }
     </style>
 </head>
 <body>
     <div class="container">
         <div class="header">
-            <h1>🛡️ Anti-Scam</h1>
-            <p>Защита от мошенников в Telegram</p>
+            <h1>База данных мошенников</h1>
+            <p>Система защиты от мошеннических действий</p>
         </div>
 
-        <div class="card">
+        <div class="search-section">
             <div class="search-box">
-                <input type="text" class="search-input" placeholder="Введите username или ID для поиска..." id="searchInput">
-                <button class="search-btn" onclick="searchScammer()">🔍</button>
+                <input type="text" class="search-input" placeholder="Введите username или ID пользователя" id="searchInput">
+                <button class="search-btn" onclick="searchScammer()">Поиск</button>
             </div>
         </div>
 
-        <div class="stats-grid">
+        <div class="stats-section">
             <div class="stat-card">
                 <div class="stat-number" id="pendingCount">0</div>
-                <div class="stat-label">Ожидают</div>
+                <div class="stat-label">Ожидают проверки</div>
             </div>
             <div class="stat-card">
                 <div class="stat-number" id="approvedCount">0</div>
@@ -290,15 +369,21 @@
         </div>
 
         <div class="submit-section">
-            <h3>🚨 Нашли скамера?</h3>
-            <p>Подайте заявку и помогите другим!</p>
-            <button class="submit-btn" onclick="submitReport()">Подать заявку</button>
+            <h3>Подать жалобу</h3>
+            <p>Сообщите о мошеннических действиях</p>
+            <button class="submit-btn" onclick="submitReport()">Подать жалобу</button>
         </div>
 
-        <div id="results"></div>
+        <div id="results" class="results-section">
+            <div class="empty-state">
+                <div class="empty-state-icon">🔍</div>
+                <h3>Поиск в базе данных</h3>
+                <p>Введите username или ID для поиска</p>
+            </div>
+        </div>
 
         <div class="footer">
-            <p>© 2024 Anti-Scam Protection System</p>
+            <p>© 2024 Anti-Scam Database</p>
         </div>
     </div>
 
@@ -313,52 +398,32 @@
             loadStats();
         });
 
-        // Функция поиска скамеров
+        // Функция поиска
         function searchScammer() {
             const query = document.getElementById('searchInput').value.trim();
             if (!query) {
-                showMessage('Введите username или ID для поиска', 'error');
+                showNotification('Введите данные для поиска', 'error');
                 return;
             }
 
             showLoading();
             
-            // Здесь будет API запрос к вашему боту
-            // Пока что используем мок данные
-            setTimeout(() => {
-                searchResults(query);
-            }, 1000);
+            // Отправляем запрос в Telegram бот
+            tg.sendData(JSON.stringify({
+                action: 'search',
+                query: query
+            }));
         }
 
-        // Функция показа результатов поиска
-        function searchResults(query) {
+        // Функция показа результатов
+        function displayResults(results) {
             const resultsDiv = document.getElementById('results');
             
-            // Мок данные для демонстрации
-            const mockResults = [
-                {
-                    id: 1,
-                    username: '@scammer123',
-                    user_id: '123456789',
-                    description: 'Обманул на 5000 рублей, обещал продать iPhone, но заблокировал после перевода денег',
-                    date: '15.12.2024',
-                    hasEvidence: true
-                },
-                {
-                    id: 2,
-                    username: '@fake_seller',
-                    user_id: '987654321',
-                    description: 'Продавал несуществующие билеты на концерт, забрал деньги и исчез',
-                    date: '10.12.2024',
-                    hasEvidence: false
-                }
-            ];
-
-            if (mockResults.length === 0) {
+            if (!results || results.length === 0) {
                 resultsDiv.innerHTML = `
-                    <div class="no-results">
-                        <div style="font-size: 48px; margin-bottom: 20px;">🔍</div>
-                        <h3>Ничего не найдено</h3>
+                    <div class="empty-state">
+                        <div class="empty-state-icon">🔍</div>
+                        <h3>Результаты не найдены</h3>
                         <p>Попробуйте другой запрос</p>
                     </div>
                 `;
@@ -366,17 +431,20 @@
             }
 
             let html = '';
-            mockResults.forEach(result => {
+            results.forEach(result => {
                 html += `
-                    <div class="result-card">
+                    <div class="result-card" data-report-id="${result.id}">
                         <div class="result-header">
                             <div class="scammer-name">${result.username}</div>
                             <div class="scammer-id">ID: ${result.user_id}</div>
                         </div>
                         <div class="result-description">${result.description}</div>
                         <div class="result-meta">
-                            <span>📅 ${result.date}</span>
-                            ${result.hasEvidence ? '<button class="evidence-btn" onclick="viewEvidence(' + result.id + ')">📸 Доказательства</button>' : '<span style="color: #999;">📸 Нет доказательств</span>'}
+                            <span>Дата: ${result.date}</span>
+                            ${result.hasEvidence 
+                                ? `<button class="evidence-btn" data-report-id="${result.id}">Показать доказательства</button>`
+                                : '<span style="color: #666;">Доказательства отсутствуют</span>'
+                            }
                         </div>
                     </div>
                 `;
@@ -385,21 +453,26 @@
             resultsDiv.innerHTML = html;
         }
 
-        // Функция показа доказательств
+        // Функция просмотра доказательств
         function viewEvidence(reportId) {
-            tg.showAlert('Функция просмотра доказательств будет доступна в полной версии приложения');
+            tg.sendData(JSON.stringify({
+                action: 'view_evidence',
+                report_id: reportId
+            }));
         }
 
-        // Функция подачи заявки
+        // Функция подачи жалобы
         function submitReport() {
-            tg.showAlert('Для подачи заявки используйте кнопку "Подать заявку" в боте');
+            tg.sendData(JSON.stringify({
+                action: 'submit_report'
+            }));
         }
 
         // Функция загрузки статистики
         function loadStats() {
-            // Мок данные статистики
-            document.getElementById('pendingCount').textContent = '5';
-            document.getElementById('approvedCount').textContent = '127';
+            tg.sendData(JSON.stringify({
+                action: 'get_stats'
+            }));
         }
 
         // Функция показа загрузки
@@ -408,14 +481,44 @@
             resultsDiv.innerHTML = `
                 <div class="loading">
                     <div class="spinner"></div>
-                    <p>Поиск скамеров...</p>
+                    <p>Выполняется поиск...</p>
                 </div>
             `;
         }
 
-        // Функция показа сообщений
-        function showMessage(message, type = 'info') {
-            tg.showAlert(message);
+        // Функция показа ошибки
+        function showError() {
+            const resultsDiv = document.getElementById('results');
+            resultsDiv.innerHTML = `
+                <div class="error-state">
+                    <h3>Сервис недоступен</h3>
+                    <p>Попробуйте позже</p>
+                </div>
+            `;
+        }
+
+        // Функция показа уведомлений
+        function showNotification(message, type = 'info') {
+            const notification = document.createElement('div');
+            notification.className = 'notification';
+            notification.textContent = message;
+            
+            if (type === 'error') {
+                notification.style.borderColor = '#ff6b6b';
+            }
+            
+            document.body.appendChild(notification);
+            
+            setTimeout(() => {
+                notification.style.transform = 'translateX(0)';
+            }, 100);
+            
+            setTimeout(() => {
+                notification.style.transform = 'translateX(100%)';
+                setTimeout(() => {
+                    notification.remove();
+                }, 300);
+            }, 3000);
         }
 
         // Обработка Enter в поле поиска
@@ -424,6 +527,69 @@
                 searchScammer();
             }
         });
+
+        // Обработка кликов по кнопкам доказательств
+        document.addEventListener('click', function(e) {
+            if (e.target.classList.contains('evidence-btn')) {
+                const reportId = e.target.dataset.reportId;
+                viewEvidence(reportId);
+            }
+        });
+
+        // Обработка данных от Telegram
+        window.addEventListener('message', function(event) {
+            if (event.data) {
+                try {
+                    const data = JSON.parse(event.data);
+                    handleTelegramData(data);
+                } catch (error) {
+                    console.error('Ошибка обработки данных:', error);
+                    showError();
+                }
+            }
+        });
+
+        // Обработка данных от Telegram
+        function handleTelegramData(data) {
+            switch (data.action) {
+                case 'search_results':
+                    displayResults(data.results);
+                    break;
+                case 'stats':
+                    updateStats(data.stats);
+                    break;
+                case 'show_evidence':
+                    showEvidence(data.evidence);
+                    break;
+                case 'error':
+                    showError();
+                    break;
+                default:
+                    console.log('Неизвестное действие:', data.action);
+            }
+        }
+
+        // Обновление статистики
+        function updateStats(stats) {
+            if (stats) {
+                document.getElementById('pendingCount').textContent = stats.pending || 0;
+                document.getElementById('approvedCount').textContent = stats.approved || 0;
+            }
+        }
+
+        // Показать доказательства
+        function showEvidence(evidence) {
+            if (evidence && evidence.url) {
+                window.open(evidence.url, '_blank');
+            } else {
+                showNotification('Доказательства недоступны', 'error');
+            }
+        }
+
+        // Экспорт функций
+        window.searchScammer = searchScammer;
+        window.viewEvidence = viewEvidence;
+        window.submitReport = submitReport;
     </script>
 </body>
 </html> 
