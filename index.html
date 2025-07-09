@@ -1,0 +1,429 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Anti-Scam Protection</title>
+    <script src="https://telegram.org/js/telegram-web-app.js"></script>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            color: #333;
+        }
+
+        .container {
+            max-width: 400px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+
+        .header {
+            text-align: center;
+            margin-bottom: 30px;
+            color: white;
+        }
+
+        .header h1 {
+            font-size: 28px;
+            margin-bottom: 10px;
+            text-shadow: 0 2px 4px rgba(0,0,0,0.3);
+        }
+
+        .header p {
+            font-size: 16px;
+            opacity: 0.9;
+        }
+
+        .card {
+            background: white;
+            border-radius: 20px;
+            padding: 25px;
+            margin-bottom: 20px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+            backdrop-filter: blur(10px);
+        }
+
+        .search-box {
+            position: relative;
+            margin-bottom: 20px;
+        }
+
+        .search-input {
+            width: 100%;
+            padding: 15px 20px;
+            border: 2px solid #e1e5e9;
+            border-radius: 15px;
+            font-size: 16px;
+            transition: all 0.3s ease;
+            background: #f8f9fa;
+        }
+
+        .search-input:focus {
+            outline: none;
+            border-color: #667eea;
+            background: white;
+            box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+        }
+
+        .search-btn {
+            position: absolute;
+            right: 10px;
+            top: 50%;
+            transform: translateY(-50%);
+            background: #667eea;
+            color: white;
+            border: none;
+            border-radius: 10px;
+            padding: 10px 15px;
+            cursor: pointer;
+            font-size: 14px;
+            transition: all 0.3s ease;
+        }
+
+        .search-btn:hover {
+            background: #5a6fd8;
+            transform: translateY(-50%) scale(1.05);
+        }
+
+        .stats-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 15px;
+            margin-bottom: 20px;
+        }
+
+        .stat-card {
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            color: white;
+            padding: 20px;
+            border-radius: 15px;
+            text-align: center;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.2);
+        }
+
+        .stat-number {
+            font-size: 24px;
+            font-weight: bold;
+            margin-bottom: 5px;
+        }
+
+        .stat-label {
+            font-size: 12px;
+            opacity: 0.9;
+        }
+
+        .result-card {
+            background: white;
+            border-radius: 15px;
+            padding: 20px;
+            margin-bottom: 15px;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+            border-left: 4px solid #ff6b6b;
+        }
+
+        .result-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 15px;
+        }
+
+        .scammer-name {
+            font-size: 18px;
+            font-weight: bold;
+            color: #ff6b6b;
+        }
+
+        .scammer-id {
+            font-size: 14px;
+            color: #666;
+            background: #f8f9fa;
+            padding: 5px 10px;
+            border-radius: 8px;
+        }
+
+        .result-description {
+            color: #555;
+            line-height: 1.5;
+            margin-bottom: 15px;
+        }
+
+        .result-meta {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            font-size: 12px;
+            color: #888;
+        }
+
+        .evidence-btn {
+            background: #667eea;
+            color: white;
+            border: none;
+            border-radius: 10px;
+            padding: 8px 15px;
+            cursor: pointer;
+            font-size: 12px;
+            transition: all 0.3s ease;
+        }
+
+        .evidence-btn:hover {
+            background: #5a6fd8;
+            transform: scale(1.05);
+        }
+
+        .no-results {
+            text-align: center;
+            color: #666;
+            padding: 40px 20px;
+        }
+
+        .no-results img {
+            width: 80px;
+            height: 80px;
+            margin-bottom: 20px;
+            opacity: 0.5;
+        }
+
+        .loading {
+            text-align: center;
+            padding: 40px 20px;
+            color: #666;
+        }
+
+        .spinner {
+            width: 40px;
+            height: 40px;
+            border: 4px solid #f3f3f3;
+            border-top: 4px solid #667eea;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+            margin: 0 auto 20px;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        .submit-section {
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            color: white;
+            border-radius: 15px;
+            padding: 25px;
+            text-align: center;
+            margin-bottom: 20px;
+        }
+
+        .submit-btn {
+            background: white;
+            color: #667eea;
+            border: none;
+            border-radius: 15px;
+            padding: 15px 30px;
+            font-size: 16px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            margin-top: 15px;
+        }
+
+        .submit-btn:hover {
+            transform: scale(1.05);
+            box-shadow: 0 5px 15px rgba(0,0,0,0.2);
+        }
+
+        .footer {
+            text-align: center;
+            color: white;
+            opacity: 0.8;
+            font-size: 12px;
+            margin-top: 30px;
+        }
+
+        @media (max-width: 480px) {
+            .container {
+                padding: 15px;
+            }
+            
+            .header h1 {
+                font-size: 24px;
+            }
+            
+            .stats-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>🛡️ Anti-Scam</h1>
+            <p>Защита от мошенников в Telegram</p>
+        </div>
+
+        <div class="card">
+            <div class="search-box">
+                <input type="text" class="search-input" placeholder="Введите username или ID для поиска..." id="searchInput">
+                <button class="search-btn" onclick="searchScammer()">🔍</button>
+            </div>
+        </div>
+
+        <div class="stats-grid">
+            <div class="stat-card">
+                <div class="stat-number" id="pendingCount">0</div>
+                <div class="stat-label">Ожидают</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-number" id="approvedCount">0</div>
+                <div class="stat-label">Подтверждено</div>
+            </div>
+        </div>
+
+        <div class="submit-section">
+            <h3>🚨 Нашли скамера?</h3>
+            <p>Подайте заявку и помогите другим!</p>
+            <button class="submit-btn" onclick="submitReport()">Подать заявку</button>
+        </div>
+
+        <div id="results"></div>
+
+        <div class="footer">
+            <p>© 2024 Anti-Scam Protection System</p>
+        </div>
+    </div>
+
+    <script>
+        // Инициализация Telegram WebApp
+        const tg = window.Telegram.WebApp;
+        tg.expand();
+        tg.ready();
+
+        // Загрузка статистики при загрузке страницы
+        document.addEventListener('DOMContentLoaded', function() {
+            loadStats();
+        });
+
+        // Функция поиска скамеров
+        function searchScammer() {
+            const query = document.getElementById('searchInput').value.trim();
+            if (!query) {
+                showMessage('Введите username или ID для поиска', 'error');
+                return;
+            }
+
+            showLoading();
+            
+            // Здесь будет API запрос к вашему боту
+            // Пока что используем мок данные
+            setTimeout(() => {
+                searchResults(query);
+            }, 1000);
+        }
+
+        // Функция показа результатов поиска
+        function searchResults(query) {
+            const resultsDiv = document.getElementById('results');
+            
+            // Мок данные для демонстрации
+            const mockResults = [
+                {
+                    id: 1,
+                    username: '@scammer123',
+                    user_id: '123456789',
+                    description: 'Обманул на 5000 рублей, обещал продать iPhone, но заблокировал после перевода денег',
+                    date: '15.12.2024',
+                    hasEvidence: true
+                },
+                {
+                    id: 2,
+                    username: '@fake_seller',
+                    user_id: '987654321',
+                    description: 'Продавал несуществующие билеты на концерт, забрал деньги и исчез',
+                    date: '10.12.2024',
+                    hasEvidence: false
+                }
+            ];
+
+            if (mockResults.length === 0) {
+                resultsDiv.innerHTML = `
+                    <div class="no-results">
+                        <div style="font-size: 48px; margin-bottom: 20px;">🔍</div>
+                        <h3>Ничего не найдено</h3>
+                        <p>Попробуйте другой запрос</p>
+                    </div>
+                `;
+                return;
+            }
+
+            let html = '';
+            mockResults.forEach(result => {
+                html += `
+                    <div class="result-card">
+                        <div class="result-header">
+                            <div class="scammer-name">${result.username}</div>
+                            <div class="scammer-id">ID: ${result.user_id}</div>
+                        </div>
+                        <div class="result-description">${result.description}</div>
+                        <div class="result-meta">
+                            <span>📅 ${result.date}</span>
+                            ${result.hasEvidence ? '<button class="evidence-btn" onclick="viewEvidence(' + result.id + ')">📸 Доказательства</button>' : '<span style="color: #999;">📸 Нет доказательств</span>'}
+                        </div>
+                    </div>
+                `;
+            });
+
+            resultsDiv.innerHTML = html;
+        }
+
+        // Функция показа доказательств
+        function viewEvidence(reportId) {
+            tg.showAlert('Функция просмотра доказательств будет доступна в полной версии приложения');
+        }
+
+        // Функция подачи заявки
+        function submitReport() {
+            tg.showAlert('Для подачи заявки используйте кнопку "Подать заявку" в боте');
+        }
+
+        // Функция загрузки статистики
+        function loadStats() {
+            // Мок данные статистики
+            document.getElementById('pendingCount').textContent = '5';
+            document.getElementById('approvedCount').textContent = '127';
+        }
+
+        // Функция показа загрузки
+        function showLoading() {
+            const resultsDiv = document.getElementById('results');
+            resultsDiv.innerHTML = `
+                <div class="loading">
+                    <div class="spinner"></div>
+                    <p>Поиск скамеров...</p>
+                </div>
+            `;
+        }
+
+        // Функция показа сообщений
+        function showMessage(message, type = 'info') {
+            tg.showAlert(message);
+        }
+
+        // Обработка Enter в поле поиска
+        document.getElementById('searchInput').addEventListener('keypress', function(e) {
+            if (e.key === 'Enter') {
+                searchScammer();
+            }
+        });
+    </script>
+</body>
+</html> 
